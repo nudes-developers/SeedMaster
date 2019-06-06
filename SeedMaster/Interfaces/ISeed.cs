@@ -14,20 +14,6 @@ namespace Nudes.SeedMaster.Interfaces
 
     public static class SeedExtensions
     {
-        public static async Task SeedAllInto<TDbContext>(this IServiceProvider serviceProvider, TDbContext dbContext) where TDbContext : DbContext
-        {
-            var allSeeds = AppDomain.CurrentDomain.GetAssemblies()
-                                .SelectMany(d => d.GetTypes())
-                                .Where(d => typeof(ISeed<TDbContext>).IsAssignableFrom(d))
-                                .Where(d => d.IsClass);
-
-            foreach (var seedClass in allSeeds)
-            {
-                var instance = ActivatorUtilities.CreateInstance(serviceProvider, seedClass, new object[] { dbContext }) as ISeed<TDbContext>;
-                await instance.Seed();
-            }
-        }
-
         public static async Task SeedAllInto<TDbContext>(this IServiceProvider serviceProvider, TDbContext dbContext, params Assembly[] assemblies) where TDbContext : DbContext
         {
             if (assemblies == null || !assemblies.Any())
