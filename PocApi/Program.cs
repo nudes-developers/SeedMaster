@@ -37,18 +37,18 @@ namespace PocApi
 
         private static async Task RunSampleSeed(IServiceProvider serviceProvider)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<EfCoreSeeder<SampleDbContext>>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<ISeeder<SampleDbContext>>>();
             var dbContext = serviceProvider.GetRequiredService<SampleDbContext>();
 
-            using (var seeder = new SampleSeeder(serviceProvider, dbContext, logger))
+            using (SampleSeeder seeder = new SampleSeeder(serviceProvider, dbContext, logger))
                 await seeder.Run();
         }
         private static async Task RunTestSeed(IServiceProvider serviceProvider)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<EfCoreSeeder<TestDbContext>>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<ISeeder<TestDbContext>>>();
             var dbContext = serviceProvider.GetRequiredService<TestDbContext>();
 
-            using (var seeder = new Data.Seeders.TestSeeder(serviceProvider, dbContext, logger))
+            using (Data.Seeders.TestSeeder seeder = new Data.Seeders.TestSeeder(serviceProvider, dbContext, logger))
                 await seeder.Run();
         }
     }

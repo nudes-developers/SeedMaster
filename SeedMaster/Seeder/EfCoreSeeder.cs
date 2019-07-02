@@ -11,9 +11,9 @@ namespace SeedMaster.Seeder
     {
         private readonly IServiceProvider serviceProvider;
         private readonly TDbContext dbContext;
-        private readonly ILogger<EfCoreSeeder<TDbContext>> logger;
+        private readonly ILogger<ISeeder<TDbContext>> logger;
 
-        public EfCoreSeeder(IServiceProvider serviceProvider, TDbContext dbContext, ILogger<EfCoreSeeder<TDbContext>> logger)
+        public EfCoreSeeder(IServiceProvider serviceProvider, TDbContext dbContext, ILogger<ISeeder<TDbContext>> logger)
         {
             this.serviceProvider = serviceProvider;
             this.dbContext = dbContext;

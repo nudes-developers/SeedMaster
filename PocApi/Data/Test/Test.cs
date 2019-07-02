@@ -26,7 +26,7 @@ namespace PocApi.Data.Test
             dbContext.Add(new Test
             {
                 Id = Guid.NewGuid(),
-                Title = "Title"
+                Title = "Title 3.0"
             });
 
             await Task.CompletedTask;
