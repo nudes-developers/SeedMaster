@@ -5,12 +5,7 @@ VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeedMaster", "SeedMaster\SeedMaster.csproj", "{69E93E40-B694-4F1F-A97F-33D4897CDC7C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3B8A1C36-6F10-400C-AEC0-AE5CE94DAAAE}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocApi", "PocApi\PocApi.csproj", "{F735E315-99FB-4F54-AFD1-A7A92A8EE3A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocApi", "samples\PocApi\PocApi.csproj", "{F735E315-99FB-4F54-AFD1-A7A92A8EE3A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

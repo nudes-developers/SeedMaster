@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Nudes.SeedMaster.Interfaces;
-using PocApi.Data.Sample;
-using SeedMaster.Seeder;
+using Nudes.SeedMaster.Seeder;
+using PocApi.Data.Test;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace PocApi.Data.Seeders
 {
-    public class SampleSeeder : EfCoreSeeder<SampleDbContext>
+    public class TestSeeder : EfCoreSeeder<TestDbContext>
     {
-        public SampleSeeder(IServiceProvider serviceProvider, SampleDbContext dbContext, ILogger<ISeeder<SampleDbContext>> logger) : base(serviceProvider, dbContext, logger) { }
+        public TestSeeder(IServiceProvider serviceProvider, TestDbContext dbContext, ILogger<ISeeder<TestDbContext>> logger) : base(serviceProvider, dbContext, logger) { }
 
         public override Task Seed(params Assembly[] assemblies)
         {

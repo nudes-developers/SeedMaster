@@ -9,10 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nudes.SeedMaster.Interfaces;
+using Nudes.SeedMaster.Seeder;
 using PocApi.Data.Sample;
 using PocApi.Data.Seeders;
 using PocApi.Data.Test;
-using SeedMaster.Seeder;
 
 namespace PocApi
 {
