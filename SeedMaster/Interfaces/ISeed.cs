@@ -1,33 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Nudes.SeedMaster.Interfaces
 {
-    public interface ISeed<TDbContext> where TDbContext : DbContext
+    /// <summary>
+    /// Minimun implementation needed to seed data into the context
+    /// </summary>
+    public interface ISeed
     {
-        Task Seed();
+        /// <summary>
+        /// Seed Method that will inject data into the context
+        /// </summary>
+        /// <param name="context">context that data will be injected into</param>
+        Task Seed(object context);
     }
 
-    public static class SeedExtensions
+    /// <summary>
+    /// Typed implementation needed to seed data into the context
+    /// </summary>
+    /// <typeparam name="TContext"></typeparam>
+    public interface ISeed<TContext> : ISeed
     {
-        public static async Task SeedAllInto<TDbContext>(this IServiceProvider serviceProvider, TDbContext dbContext, params Assembly[] assemblies) where TDbContext : DbContext
-        {
-            if (assemblies == null || !assemblies.Any())
-                assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            var allSeeds = assemblies.SelectMany(d => d.GetTypes())
-                                     .Where(d => typeof(ISeed<TDbContext>).IsAssignableFrom(d))
-                                     .Where(d => d.IsClass);
-
-            foreach (var seedClass in allSeeds)
-            {
-                var instance = ActivatorUtilities.CreateInstance(serviceProvider, seedClass, new object[] { dbContext }) as ISeed<TDbContext>;
-                await instance.Seed();
-            }
-        }
+        /// <summary>
+        /// Seed Method that will inject data into the context
+        /// </summary>
+        /// <param name="context">context that data will be injected into</param>
+        Task Seed(TContext context);
     }
 }
