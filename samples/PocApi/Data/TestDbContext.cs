@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PocApi.Data.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PocApi.Data.Test
+namespace PocApi.Data
 {
     public class TestDbContext : DbContext
     {

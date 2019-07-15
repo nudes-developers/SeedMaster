@@ -1,76 +1,103 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using Nudes.SeedMaster.Interfaces;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace SeedMaster.Seeder
+namespace Nudes.SeedMaster.Seeder
 {
-    public class EfCoreSeeder<TDbContext> : ISeeder<TDbContext> where TDbContext : DbContext
+    /// <summary>
+    /// EF Core Implementation of seed strategy
+    /// It should rely on DependencyInjection to acquire DbContexts and ISeeds
+    /// </summary>
+    public class EfCoreSeeder : ISeeder
     {
-        private readonly IServiceProvider serviceProvider;
-        private readonly TDbContext dbContext;
-        private readonly ILogger<ISeeder<TDbContext>> logger;
+        private readonly IEnumerable<DbContext> contexts;
+        private readonly IEnumerable<ISeed> seeds;
+        private readonly ILogger<EfCoreSeeder> logger;
 
-        public EfCoreSeeder(IServiceProvider serviceProvider, TDbContext dbContext, ILogger<ISeeder<TDbContext>> logger)
+        public EfCoreSeeder(IEnumerable<DbContext> contexts, IEnumerable<ISeed> seeds, ILogger<EfCoreSeeder> logger)
         {
-            this.serviceProvider = serviceProvider;
-            this.dbContext = dbContext;
+            this.contexts = contexts;
+            this.seeds = seeds;
             this.logger = logger;
         }
 
-        public virtual async Task CleanDb()
+        public virtual async Task Clean()
         {
             #region Droping
 
-            logger.LogInformation("Starting database dropping");
+            logger?.LogInformation("Cleaning started");
 
-            await dbContext.Database.EnsureDeletedAsync();
+            foreach (var db in contexts)
+                await CleanDb(db);
 
-            logger.LogInformation($"Database dropped");
-
-            #endregion
-
-            #region Creation
-
-            logger.LogInformation("Starting database creation");
-            
-            await dbContext.Database.EnsureCreatedAsync();
-
-            logger.LogInformation("The Database was created");
+            logger?.LogInformation("Database ended");
 
             #endregion
         }
 
-        public virtual async Task Seed(params Assembly[] assemblies)
+        protected virtual async Task CleanDb(DbContext db)
         {
-            logger.LogInformation("Starting seed");
+            logger?.LogInformation($"Cleaning context {db}");
 
-            await serviceProvider.SeedAllInto<TDbContext>(dbContext, assemblies);
+            foreach (var type in db.Model.GetEntityTypes())
+                await CleanEntity(db, type);
+        }
 
-            logger.LogInformation("Seed finalized");
+        protected virtual async Task CleanEntity(DbContext db, IEntityType type)
+        {
+            logger?.LogInformation($"Cleaning entity {type.Name}");
+
+            var boxedDbSet = db.GetType().GetMethod("Set").MakeGenericMethod(type.ClrType).Invoke(db, null);
+            var dbSet = boxedDbSet as IQueryable<object>;
+            db.RemoveRange(await dbSet.ToListAsync());
+        }
+
+        public virtual async Task Seed()
+        {
+            logger?.LogInformation("Starting seed");
+
+            foreach (var db in contexts)
+            {
+                var dbseeds = seeds.Where(d => d.GetType().GetTypeInfo().ImplementedInterfaces.Any(f =>f.IsGenericType && f.GetGenericTypeDefinition() == typeof(ISeed<>) && f.GenericTypeArguments.Any(g => g == db.GetType())));
+                foreach (var seed in dbseeds)
+                {
+                    logger?.LogInformation($"seeding {seed} into {db}");
+                    await seed.Seed(db);
+                }
+            }
+
+            logger?.LogInformation("Seed finalized");
         }
 
         public virtual async Task Commit()
         {
-            logger.LogInformation("Starting commit");
+            logger?.LogInformation("Starting commit");
 
-            await dbContext.SaveChangesAsync();
+            foreach (var db in contexts)
+            {
+                logger?.LogInformation($"Commiting changes to {db}");
+                await db.SaveChangesAsync();
+            }
 
-            logger.LogInformation("Commit finalized");
+            logger?.LogInformation("Commit finalized");
         }
 
         public virtual async Task Run()
         {
-            await CleanDb();
+            await Clean();
             await Seed();
             await Commit();
         }
 
         public virtual void Dispose()
         {
-            dbContext?.Dispose();
+            foreach (var db in contexts)
+                db?.Dispose();
         }
     }
 }

@@ -9,10 +9,11 @@
     <PackageTags>seed, efcore, reflection</PackageTags>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <AssemblyName>SeedMaster</AssemblyName>
+    <RootNamespace>Nudes.SeedMaster</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include=".\LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+    <None Include=".\LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
   </ItemGroup>
 
   <ItemGroup>
