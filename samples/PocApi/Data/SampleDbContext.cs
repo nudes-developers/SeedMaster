@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using PocApi.Data.Domain;
 
-namespace PocApi.Data.Sample
+namespace PocApi.Data
 {
     public class SampleDbContext : DbContext
     {

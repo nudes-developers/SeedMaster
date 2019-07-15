@@ -1,26 +1,21 @@
-﻿using Microsoft.Extensions.Logging;
-using Nudes.SeedMaster.Interfaces;
-using Nudes.SeedMaster.Seeder;
-using PocApi.Data.Test;
+﻿using Nudes.SeedMaster.Interfaces;
+using PocApi.Data.Domain;
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace PocApi.Data.Seeders
 {
-    public class TestSeeder : EfCoreSeeder<TestDbContext>
+    public class TestSeeder : BaseSeed<TestDbContext>
     {
-        public TestSeeder(IServiceProvider serviceProvider, TestDbContext dbContext, ILogger<ISeeder<TestDbContext>> logger) : base(serviceProvider, dbContext, logger) { }
-
-        public override Task Seed(params Assembly[] assemblies)
+        public override async Task Seed(TestDbContext dbContext)
         {
-            if (assemblies == null)
-                assemblies = new Assembly[] { this.GetType().Assembly };
-            else
-                assemblies = assemblies.Append(this.GetType().Assembly).ToArray();
+            dbContext.Add(new Test
+            {
+                Id = Guid.NewGuid(),
+                Title = "Title 3.0"
+            });
 
-            return base.Seed(assemblies);
+            await Task.CompletedTask;
         }
     }
 }
