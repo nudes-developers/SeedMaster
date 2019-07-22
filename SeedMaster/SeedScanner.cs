@@ -25,12 +25,12 @@ namespace Nudes.SeedMaster
         /// <summary>
         /// Finds all the seeds in the specified assembly.
         /// </summary>
-        public static SeedScanner FindValidatorsInAssembly(Assembly assembly) => new SeedScanner(assembly.GetExportedTypes());
+        public static SeedScanner FindSeedersInAssembly(Assembly assembly) => new SeedScanner(assembly.GetExportedTypes());
 
         /// <summary>
         /// Finds all the seeds in the specified assemblies
         /// </summary>
-        public static SeedScanner FindValidatorsInAssemblies(params Assembly[] assemblies) => new SeedScanner(assemblies.SelectMany(x => x.GetExportedTypes().Distinct()));
+        public static SeedScanner FindSeedersInAssemblies(params Assembly[] assemblies) => new SeedScanner(assemblies.SelectMany(x => x.GetExportedTypes().Distinct()));
 
         private IEnumerable<ScanResult> Execute()
         {
@@ -68,10 +68,10 @@ namespace Nudes.SeedMaster
             /// <summary>
             /// Creates an instance of an ScanResult.
             /// </summary>
-            public ScanResult(Type interfaceType, Type validatorType)
+            public ScanResult(Type interfaceType, Type implementationType)
             {
                 InterfaceType = interfaceType;
-                ValidatorType = validatorType;
+                ImplementationType = implementationType;
             }
 
             /// <summary>
@@ -82,7 +82,7 @@ namespace Nudes.SeedMaster
             /// <summary>
             /// Concrete type that implements the ISeed Type.
             /// </summary>
-            public Type ValidatorType { get; private set; }
+            public Type ImplementationType { get; private set; }
         }
     }
 }

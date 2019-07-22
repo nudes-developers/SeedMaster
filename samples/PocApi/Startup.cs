@@ -46,8 +46,8 @@ namespace PocApi
             services.AddScoped<DbContext>(provider => provider.GetService<TestDbContext>());
 
             // Scanning our assembly and adding all ISeed
-            SeedScanner.FindValidatorsInAssembly(Assembly.GetExecutingAssembly())
-                .ForEach(d => services.AddScoped(d.InterfaceType, d.ValidatorType));
+            SeedScanner.FindSeedersInAssembly(Assembly.GetExecutingAssembly())
+                .ForEach(d => services.AddScoped(d.InterfaceType, d.ImplementationType));
 
             // Adding our EfCoreSeeder service
             services.AddScoped<ISeeder, EfCoreSeeder>();
