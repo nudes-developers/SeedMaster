@@ -90,6 +90,7 @@ namespace Nudes.SeedMaster.Seeder
         public virtual async Task Run()
         {
             await Clean();
+            await Commit();
             await Seed();
             await Commit();
         }
