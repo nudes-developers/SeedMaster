@@ -54,7 +54,7 @@ namespace Nudes.SeedMaster.Seeder
 
             var boxedDbSet = db.GetType().GetMethod("Set").MakeGenericMethod(type.ClrType).Invoke(db, null);
             var dbSet = boxedDbSet as IQueryable<object>;
-            db.RemoveRange(await dbSet.ToListAsync());
+            db.RemoveRange(await dbSet.IgnoreQueryFilters().ToListAsync());
         }
 
         public virtual async Task Seed()
@@ -91,6 +91,7 @@ namespace Nudes.SeedMaster.Seeder
         {
             await Clean();
             await Commit();
+
             await Seed();
             await Commit();
         }
