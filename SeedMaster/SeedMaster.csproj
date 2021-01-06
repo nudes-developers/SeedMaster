@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>Nudes.SeedMaster</PackageId>
-    <Version>0.3.3</Version>
+    <Version>0.3.4</Version>
     <Company>NUDES - SENAI</Company>
     <IsPackable>true</IsPackable>
     <PackageTags>seed, efcore, reflection</PackageTags>
