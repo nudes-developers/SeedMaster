@@ -52,7 +52,11 @@ namespace Nudes.SeedMaster.Seeder
         {
             logger?.LogInformation($"Cleaning entity {type.Name}");
 
-            var boxedDbSet = db.GetType().GetMethod("Set").MakeGenericMethod(type.ClrType).Invoke(db, null);
+            var boxedDbSet = db.GetType().GetMethods()
+                                         .Where(d => d.Name == "Set")
+                                         .FirstOrDefault(d => d.IsGenericMethod)
+                                         .MakeGenericMethod(type.ClrType).Invoke(db, null);
+                                         
             var dbSet = boxedDbSet as IQueryable<object>;
             db.RemoveRange(await dbSet.IgnoreQueryFilters().ToListAsync());
         }
