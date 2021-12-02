@@ -25,12 +25,12 @@ namespace Nudes.SeedMaster
         /// <summary>
         /// Finds all the seeds in the specified assembly.
         /// </summary>
-        public static SeedScanner FindSeedersInAssembly(Assembly assembly) => new SeedScanner(assembly.GetExportedTypes());
+        public static SeedScanner FindSeedersInAssembly(Assembly assembly) => new(assembly.GetExportedTypes());
 
         /// <summary>
         /// Finds all the seeds in the specified assemblies
         /// </summary>
-        public static SeedScanner FindSeedersInAssemblies(params Assembly[] assemblies) => new SeedScanner(assemblies.SelectMany(x => x.GetExportedTypes().Distinct()));
+        public static SeedScanner FindSeedersInAssemblies(params Assembly[] assemblies) => new(assemblies.SelectMany(x => x.GetExportedTypes().Distinct()));
 
         private IEnumerable<ScanResult> Execute()
         {

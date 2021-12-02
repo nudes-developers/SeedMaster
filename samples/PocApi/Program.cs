@@ -1,28 +1,57 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nudes.SeedMaster;
 using Nudes.SeedMaster.Interfaces;
+using Nudes.SeedMaster.Seeder;
+using PocApi.Data;
 
-namespace PocApi
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMvc();
+
+// Adding DbContext For Sample and Sample 2 using the same database
+builder.Services.AddDbContext<SampleDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sample")).EnableSensitiveDataLogging(), ServiceLifetime.Transient);
+builder.Services.AddDbContext<Sample2DbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sample2")).EnableSensitiveDataLogging(), ServiceLifetime.Transient);
+// Adding DbContext For Test in another database
+builder.Services.AddDbContext<TestDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Test")).EnableSensitiveDataLogging(), ServiceLifetime.Transient);
+
+// Adding all dbcontext as a service retrieved for DbContext so we can call all of them as IEnumerable<DbContext>
+builder.Services.AddScoped<DbContext>(provider => provider.GetService<SampleDbContext>());
+builder.Services.AddScoped<DbContext>(provider => provider.GetService<Sample2DbContext>());
+builder.Services.AddScoped<DbContext>(provider => provider.GetService<TestDbContext>());
+
+// Scanning our assembly and adding all ISeed
+SeedScanner.FindSeedersInAssembly(Assembly.GetExecutingAssembly())
+    .ForEach(d => builder.Services.AddScoped(d.InterfaceType, d.ImplementationType));
+
+// Adding our EfCoreSeeder service
+builder.Services.AddScoped<ISeeder, EfCoreSeeder>();
+
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
 {
-    public class Program
+    var contexts = scope.ServiceProvider.GetService<IEnumerable<DbContext>>();
+    await EnsureDatabasesAreaCreated(contexts);
+
+
+    var seeder = scope.ServiceProvider.GetService<ISeeder>();
+    await seeder.Run();
+
+}
+
+app.Run();
+
+async Task EnsureDatabasesAreaCreated(IEnumerable<DbContext> contexts)
+{
+    foreach (var context in contexts)
     {
-        public static async Task Main(string[] args)
-        {
-            var webHost = CreateWebHostBuilder(args).Build();
-
-            using (var scope = webHost.Services.CreateScope())
-            {
-                var seeder = scope.ServiceProvider.GetService<ISeeder>();
-                await seeder.Run();
-            }
-
-            webHost.Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+        await context.Database.EnsureCreatedAsync();
     }
 }
