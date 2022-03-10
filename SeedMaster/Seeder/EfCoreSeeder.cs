@@ -56,7 +56,13 @@ namespace Nudes.SeedMaster.Seeder
                 logger?.LogWarning("type {typeName} is a many to many, skipping", type.Name);
                 return;
             }
-            
+
+            if (type.IsOwned())
+            {
+                logger?.LogWarning("type {typeName} is a many to many, skipping", type.Name);
+                return;
+            }
+
             var boxedDbSet = db.GetType().GetMethods()
                                          .Where(d => d.Name == "Set")
                                          .FirstOrDefault(d => d.IsGenericMethod)
