@@ -42,7 +42,7 @@ namespace Nudes.SeedMaster.Seeder
 
         protected virtual async Task CleanDb(DbContext db)
         {
-            logger?.LogInformation("Cleaning context {db}",db);
+            logger?.LogInformation("Cleaning context {db}", db);
 
             foreach (var type in db.Model.GetEntityTypes())
                 await CleanEntity(db, type);
@@ -59,7 +59,7 @@ namespace Nudes.SeedMaster.Seeder
 
             if (type.IsOwned())
             {
-                logger?.LogWarning("type {typeName} is a many to many, skipping", type.Name);
+                logger?.LogWarning("type {typeName} is owned, skipping", type.Name);
                 return;
             }
 
@@ -67,7 +67,7 @@ namespace Nudes.SeedMaster.Seeder
                                          .Where(d => d.Name == "Set")
                                          .FirstOrDefault(d => d.IsGenericMethod)
                                          .MakeGenericMethod(type.ClrType).Invoke(db, null);
-                                         
+
             var dbSet = boxedDbSet as IQueryable<object>;
             db.RemoveRange(await dbSet.IgnoreQueryFilters().ToListAsync());
         }
@@ -78,7 +78,7 @@ namespace Nudes.SeedMaster.Seeder
 
             foreach (var db in contexts)
             {
-                var dbseeds = seeds.Where(d => d.GetType().GetTypeInfo().ImplementedInterfaces.Any(f =>f.IsGenericType && f.GetGenericTypeDefinition() == typeof(ISeed<>) && f.GenericTypeArguments.Any(g => g == db.GetType())));
+                var dbseeds = seeds.Where(d => d.GetType().GetTypeInfo().ImplementedInterfaces.Any(f => f.IsGenericType && f.GetGenericTypeDefinition() == typeof(ISeed<>) && f.GenericTypeArguments.Any(g => g == db.GetType())));
                 foreach (var seed in dbseeds)
                 {
                     logger?.LogInformation("seeding {seed} into {db}", seed, db);
