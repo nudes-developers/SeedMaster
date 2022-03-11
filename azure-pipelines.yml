@@ -26,7 +26,7 @@ steps:
   displayName: 'Build Solution'
   inputs:
     command: 'build'
-    projects: src/*/*.csproj
+    projects: SeedMaster/*.csproj
     arguments: '--configuration $(buildConfiguration) /p:Version=1.0.$(Build.BuildId) /p:AssemblyVersion=1.0.$(Build.BuildId)'
     feedsToUse: 'select'
 
